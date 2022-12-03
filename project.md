@@ -18,10 +18,21 @@ JOIN shipment sh on i.id = sh.id_invoice
 JOIN product p on sh.id_product = p.id
 ```
 Результат:
+| quantity | price  | sum    |
+|----------|--------|--------|
+| 100      | 70     | 7000   |
+| 10       | 30     | 300    |
+| 7        | 150    | 1050   |
+| 12       | 90     | 1080   |
+| 11       | 70000  | 770000 |
+| 5        | 130000 | 650000 |
+| 2        | 5000   | 10000  |
+| 1        | 2000   | 2000   |
+| 5        | 500    | 2500   | 
 
 2. Узнать о наличии свободного места на каждом из складов, значения сохранить в столбце `available_space`.
 ```sql
-SELECT w.id AS warehouse_is, w.capacity - sum(p.in_stock) AS avaliable_space
+SELECT w.id AS warehouse_id, w.capacity - sum(p.in_stock) AS avaliable_space
 FROM product p
 JOIN cell c ON c.id = p.id_cell
 JOIN stack s ON c.id_stack = s.id
@@ -29,6 +40,12 @@ JOIN warehouse w ON s.id_warehouse = w.id
 GROUP BY w.id
 ```
 Результат:
+| warehouse_id | avaliable_space |
+|--------------|-----------------|
+| 1            | 9531            |
+| 3            | 990             |
+| 4            | 1460            |
+| 2            | 490             |
 
 
 3. Вывести все пустые ячейки и стеллажи, на которых они расположены. Сортировать по этажам, начиная с первого. 
@@ -39,10 +56,21 @@ WHERE cell_status = 'EMPTY'
 ORDER BY stack_level
 ```
 Результат:
+| id_stack | stack_level | cell_status |
+|----------|-------------|-------------|
+| 25       | 1           | EMPTY       |
+| 25       | 1           | EMPTY       |
+| 21       | 1           | EMPTY       |
+| 21       | 1           | EMPTY       |
+| 24       | 2           | EMPTY       |
+| 44       | 2           | EMPTY       |
+| 24       | 2           | EMPTY       |
+| 17       | 2           | EMPTY       |
+| 44       | 2           | EMPTY       |
 
-4. Вывести названия компании поставщика и магазина, между которыми проводится транзакция.
+4. Вывести названия компании поставщика и магазина, между которыми проводилась транзакция.
 ```sql
-SELECT pv.name, s.name
+SELECT pv.name AS provider, s.name AS store
 FROM invoice
 JOIN shipment sh on invoice.id = sh.id_invoice
 JOIN product pd on pd.id = sh.id_product
@@ -50,6 +78,17 @@ JOIN store s on invoice.id_store = s.id
 JOIN provider pv on pd.id_provider = pv.id
 ```
 Результат:
+| provider       | store        |
+|----------------|--------------|
+| Prostocvashino | Pyatyorochka |
+| Karavay        | Pyatyorochka |
+| Viborzhec      | Perecryostok |
+| Karavay        | Lenta        |
+| Electronika    | Eldorado     |
+| Electronika    | Eldorado     |
+| Shell          | Euro auto    |
+| Marshall       | Euro auto    |
+| Marshall       | Bi-bi        |
 
 5. Найти телефоны поставщиков авто запчастей `auto parts`.
 ```sql
@@ -61,3 +100,8 @@ JOIN provider pv on pv.id = p.id_provider
 WHERE s.category = 'auto parts'
 ```
 Результат:
+| name     | owner_name  | phone   |
+|----------|-------------|---------|
+| Marshall | D. Nikulina | 6551342 |
+| Michelin | A. Davis    | 4756543 |
+| Shell    | J. Henrics  | 3552555 |
