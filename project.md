@@ -8,9 +8,9 @@
   Также в базе данных хранится информация о товарах `product` на складе. Товар прибывает от поставщика `provider` и убывает в магазин `store`. Товар убывает определенным количеством – партиями `shipment`. В накладной `invoice` указывается основная информация об уходе партии. Таблица `transaction` содержит информацию о переводе денежным средств.   
 ### Запросы для примера:
 
-1.  Посчитать стоимость партии для каждого магазина, создать столбец `sum` с результатом в таблице `transaction`.
+1.  Посчитать стоимость партии для каждого магазина, создать столбец `sum` с результатом. 
 ```sql
-SELECT sh.quantity, p.price, sh.quantity*p.price AS sum
+SELECT s.name, sh.quantity, p.price, sh.quantity*p.price AS sum
 FROM transaction
 JOIN invoice i on i.id = transaction.id_invoice
 JOIN store s on s.id = i.id_store
@@ -18,17 +18,18 @@ JOIN shipment sh on i.id = sh.id_invoice
 JOIN product p on sh.id_product = p.id
 ```
 Результат:
-| quantity | price  | sum    |
-|----------|--------|--------|
-| 100      | 70     | 7000   |
-| 10       | 30     | 300    |
-| 7        | 150    | 1050   |
-| 12       | 90     | 1080   |
-| 11       | 70000  | 770000 |
-| 5        | 130000 | 650000 |
-| 2        | 5000   | 10000  |
-| 1        | 2000   | 2000   |
-| 5        | 500    | 2500   | 
+| name         | quantity | price  | sum    |
+|--------------|----------|--------|--------|
+| Pyatyorochka | 100      | 70     | 7000   |
+| Pyatyorochka | 10       | 30     | 300    |
+| Perecryostok | 7        | 150    | 1050   |
+| Lenta        | 12       | 90     | 1080   |
+| Eldorado     | 11       | 70000  | 770000 |
+| Eldorado     | 5        | 130000 | 650000 |
+| Euro auto    | 2        | 5000   | 10000  |
+| Euro auto    | 1        | 2000   | 2000   |
+| Bi-bi        | 5        | 500    | 2500   |
+
 
 2. Узнать о наличии свободного места на каждом из складов, значения сохранить в столбце `available_space`.
 ```sql
@@ -90,6 +91,7 @@ JOIN provider pv on pd.id_provider = pv.id
 | Shell          | Euro auto    |
 | Marshall       | Euro auto    |
 | Marshall       | Bi-bi        |
+
 
 5. Найти телефоны поставщиков авто запчастей `auto parts`.
 ```sql
