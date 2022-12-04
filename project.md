@@ -48,22 +48,23 @@ GROUP BY w.id
 | 2            | 490             |
 
 
-3. Вывести все пустые ячейки и стеллажи, на которых они расположены. Сортировать по этажам, начиная с первого. 
+3. Вывести 10 пустых ячеек и стеллажи, на которых они расположены. Сортировать по этажам, начиная с первого. 
 ```sql
 SELECT id_stack, stack_level, cell_status
 FROM cell
 WHERE cell_status = 'EMPTY'
 ORDER BY stack_level
+LIMIT 10
 ```
 Результат:
 | id_stack | stack_level | cell_status |
 |----------|-------------|-------------|
 | 25       | 1           | EMPTY       |
+| 21       | 1           | EMPTY       |
 | 25       | 1           | EMPTY       |
 | 21       | 1           | EMPTY       |
-| 21       | 1           | EMPTY       |
+| 17       | 2           | EMPTY       |
 | 24       | 2           | EMPTY       |
-| 44       | 2           | EMPTY       |
 | 24       | 2           | EMPTY       |
 | 17       | 2           | EMPTY       |
 | 44       | 2           | EMPTY       |
