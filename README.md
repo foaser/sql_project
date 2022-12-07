@@ -12,8 +12,7 @@
 1.  Посчитать стоимость партии для каждого магазина, создать столбец `sum` с результатом. 
 ```sql
 SELECT s.name, sh.quantity, p.price, sh.quantity*p.price AS sum
-FROM transaction
-JOIN invoice i on i.id = transaction.id_invoice
+FROM invoice i
 JOIN store s on s.id = i.id_store
 JOIN shipment sh on i.id = sh.id_invoice
 JOIN product p on sh.id_product = p.id
@@ -109,3 +108,74 @@ WHERE s.category = 'auto parts'
 | Marshall | D. Nikulina | 6551342 |
 | Michelin | A. Davis    | 4756543 |
 | Shell    | J. Henrics  | 3552555 |
+
+Написать запрос, в котором будет указан магазин, поставщик, количество товара, поставленного от этого поставщика за предыдущие 30 дней. 
+
+```sql
+Select s.name, invoice.date, p2.name, s2.quantity
+from invoice
+join store s on invoice.id_store = s.id
+join shipment s2 on s2.id = invoice.id_shipment
+join product p on s2.id_product = p.id
+join provider p2 on p.id_provider = p2.id
+where s.name = 'Eldorado' and p2.name = 'Electronika'
+```
+
+Проверить, есть ли у нас этаж стеллажа с полностью пустыми ячейками. 
+
+```sql
+select id_stack, stack_level
+from cell
+where cell_status='EMPTY'
+group by id_stack, stack_level
+having count(cell_status)=2
+```
+
+Составить отчёт по дням, сколько партий товара в день убывало с 7 по 17 сентября. 
+
+```sql
+Select invoice.date, count(s.quantity)
+from invoice
+join shipment s on invoice.id = s.id_invoice
+where invoice.date >= '2022-09-07' and invoice.date <= '2022-09-17'
+group by invoice.date
+```
+
+Найти поставщика, который больше всего нам поставляет товара в магазины.
+
+```sql
+select shipment.quantity, p2.name
+from shipment
+join product p on shipment.id_product = p.id
+join provider p2 on p.id_provider = p2.id
+order by shipment.quantity desc
+limit 1
+```
+Найти магазин, в который прибыло меньше всего товара с ценой от 50 до 500 рублей с 1 сентября 2022 года по 30 ноября 2022 года.
+
+```sql
+select s.name, sum(quantity) as sum
+from shipment
+join invoice i on shipment.id = i.id_shipment
+join store s on i.id_store = s.id
+join product p on shipment.id_product = p.id
+where i.date >= '2022-09-01'
+  and i.date <= '2022-11-30'
+  and p.price >= 50
+  and p.price <= 500
+group by s.name
+order by sum
+limit 1
+```
+
+Найти месяц, в который убывала самая большая партия пачек печенья в магазины.
+
+```sql
+select s.name, p.name, date, s2.quantity from invoice
+join store s on invoice.id_store = s.id
+join shipment s2 on invoice.id = s2.id_invoice
+join product p on s2.id_product = p.id
+where p.name = 'cookies'
+order by quantity
+limit 1
+```
