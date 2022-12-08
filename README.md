@@ -109,7 +109,7 @@ WHERE s.category = 'auto parts'
 | Michelin | A. Davis    | 4756543 |
 | Shell    | J. Henrics  | 3552555 |
 
-Написать запрос, в котором будет указан магазин, поставщик, количество товара, поставленного от этого поставщика за предыдущие 30 дней. 
+Написать запрос, в котором будет указан магазин, поставщик, количество товара, поставленного от этого поставщика за предыдущие 30 дней (начиная с 8 ноября 2022 года). 
 
 ```sql
 Select s.name, invoice.date, p2.name, s2.quantity
@@ -118,17 +118,18 @@ join store s on invoice.id_store = s.id
 join shipment s2 on s2.id = invoice.id_shipment
 join product p on s2.id_product = p.id
 join provider p2 on p.id_provider = p2.id
-where s.name = 'Eldorado' and p2.name = 'Electronika'
+where date >= (date '2022-11-08')
 ```
 
 Проверить, есть ли у нас этаж стеллажа с полностью пустыми ячейками. 
 
 ```sql
-select id_stack, stack_level
-from cell
-where cell_status='EMPTY'
-group by id_stack, stack_level
-having count(cell_status)=2
+select s.id as stack_id, c.stack_level as level
+from stack s
+join cell c on s.id = c.id_stack
+group by s.id, c.stack_level
+having count(c.id) = sum(case cell_status when 'EMPTY' then 1 else 0 end)
+order by s.id;
 ```
 
 Составить отчёт по дням, сколько партий товара в день убывало с 7 по 17 сентября. 
@@ -137,7 +138,7 @@ having count(cell_status)=2
 Select invoice.date, count(s.quantity)
 from invoice
 join shipment s on invoice.id = s.id_invoice
-where invoice.date >= '2022-09-07' and invoice.date <= '2022-09-17'
+where invoice.date >= (date '2022-09-07') and invoice.date <= (date '2022-09-17')
 group by invoice.date
 ```
 
@@ -159,8 +160,8 @@ from shipment
 join invoice i on shipment.id = i.id_shipment
 join store s on i.id_store = s.id
 join product p on shipment.id_product = p.id
-where i.date >= '2022-09-01'
-  and i.date <= '2022-11-30'
+where i.date >= (date '2022-09-01')
+  and i.date <= (date '2022-11-30')
   and p.price >= 50
   and p.price <= 500
 group by s.name
@@ -179,3 +180,6 @@ where p.name = 'cookies'
 order by quantity
 limit 1
 ```
+### Выполнили:
+- Фомина Арина
+- Глезин Илья
